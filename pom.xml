@@ -1,0 +1,220 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.farmerswife.cloudwife</groupId>
+	<artifactId>test-aspectj</artifactId>
+	<!-- <packaging>war</packaging> -->
+
+	<name>cirkus</name>
+	<url>http://www.farmerwife.com</url>
+
+	<version>1.0</version>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<compiler.source>1.8</compiler.source>
+		<compiler.target>1.8</compiler.target>
+		<aspectj.runtime.version>1.8.13</aspectj.runtime.version>
+		<log4j.version>2.10.0</log4j.version>
+		<!-- See: https://github.com/trustin/os-maven-plugin -->
+		<!-- <os.detection.classifierWithLikes>fedora</os.detection.classifierWithLikes> -->
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjrt</artifactId>
+			<version>${aspectj.runtime.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.5</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-collections4</artifactId>
+			<version>4.1</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<finalName>${project.artifactId}</finalName>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+			<resource>
+				<directory>src/main/java</directory>
+			</resource>
+			<resource>
+				<!-- Copy over non-Java files in source -->
+				<directory>src/main/java</directory>
+				<excludes>
+					<exclude>**/*.java</exclude>
+				</excludes>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>3.0.2</version>
+				<configuration>
+					<nonFilteredFileExtensions>
+						<nonFilteredFileExtension>p12</nonFilteredFileExtension>
+					</nonFilteredFileExtensions>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.m2e</groupId>
+				<artifactId>lifecycle-mapping</artifactId>
+				<version>1.0.0</version>
+				<configuration>
+					<lifecycleMappingMetadata>
+						<pluginExecutions>
+							<pluginExecution>
+								<pluginExecutionFilter>
+									<groupId>org.codehaus.mojo</groupId>
+									<artifactId>build-helper-maven-plugin</artifactId>
+									<versionRange>[1.0,)</versionRange>
+									<goals>
+										<goal>add-source</goal>
+										<goal>add-test-source</goal>
+										<goal>add-resource</goal>
+										<goal>add-test-resource</goal>
+										<goal>maven-version</goal>
+										<goal>parse-version</goal>
+									</goals>
+								</pluginExecutionFilter>
+								<action>
+									<execute>
+										<runOnConfiguration>true</runOnConfiguration>
+										<runOnIncremental>true</runOnIncremental>
+									</execute>
+								</action>
+							</pluginExecution>
+						</pluginExecutions>
+					</lifecycleMappingMetadata>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>3.0.0</version>
+				<executions>
+					<execution>
+						<id>add-source</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>src/tools/java</source>
+								<source>src/main/aspect</source>
+							</sources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>aspectj-maven-plugin</artifactId>
+				<version>1.10</version>
+				<configuration>
+					<verbose>true</verbose>
+					<showWeaveInfo>true</showWeaveInfo>
+					<Xlint>adviceDidNotMatch=error</Xlint>
+					<complianceLevel>${compiler.target}</complianceLevel>
+					<!-- set AJC -source level and -target classfile -->
+					<!-- <source>${compiler.source}</source> -->
+					<!-- <target>${compiler.target}</target> -->
+				</configuration>
+				<executions>
+					<execution>
+						<id>aspectj-compile</id>
+						<phase>compile</phase>
+						<configuration>
+							<sources>
+								<source>
+									<basedir>src/main/java</basedir>
+									<includes>
+										<include>**/*.java</include>
+									</includes>
+								</source>
+								<source>
+									<basedir>src/main/aspect</basedir>
+									<includes>
+										<include>**/*</include>
+									</includes>
+								</source>
+							</sources>
+						</configuration>
+						<goals>
+							<!-- use this goal to weave all your main classes -->
+							<goal>compile</goal>
+						</goals>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>org.aspectj</groupId>
+						<artifactId>aspectjrt</artifactId>
+						<version>${aspectj.runtime.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.aspectj</groupId>
+						<artifactId>aspectjtools</artifactId>
+						<version>${aspectj.runtime.version}</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.7.0</version>
+				<configuration>
+					<source>${compiler.source}</source>
+					<target>${compiler.target}</target>
+					<compilerArgs>
+						<!-- enable for debugging build issues -->
+						<!-- <arg>-verbose</arg> -->
+						<arg>-Xlint:all</arg>
+					</compilerArgs>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.20.1</version>
+				<configuration>
+					<skipTests>true</skipTests>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.8</version>
+				<executions>
+					<execution>
+						<phase>prepare-package</phase>
+						<configuration>
+							<target>
+								<echo>maven.home: ${maven.home}</echo>
+								<echo>settings.localRepository: ${settings.localRepository}</echo>
+								<echo>ant.version: ${ant.version}</echo>
+								<echo>user.name: ${user.name}</echo>
+								<echo>user.home: ${user.home}</echo>
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>
