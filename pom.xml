@@ -16,9 +16,6 @@
 		<compiler.source>1.8</compiler.source>
 		<compiler.target>1.8</compiler.target>
 		<aspectj.runtime.version>1.8.13</aspectj.runtime.version>
-		<log4j.version>2.10.0</log4j.version>
-		<!-- See: https://github.com/trustin/os-maven-plugin -->
-		<!-- <os.detection.classifierWithLikes>fedora</os.detection.classifierWithLikes> -->
 	</properties>
 
 	<dependencies>
@@ -27,38 +24,17 @@
 			<artifactId>aspectjrt</artifactId>
 			<version>${aspectj.runtime.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.5</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-collections4</artifactId>
-			<version>4.1</version>
-		</dependency>
 	</dependencies>
 
 	<build>
 		<finalName>${project.artifactId}</finalName>
 		<resources>
 			<resource>
-				<directory>src/main/resources</directory>
-				<filtering>true</filtering>
-			</resource>
-			<resource>
 				<directory>src/main/java</directory>
-			</resource>
-			<resource>
-				<!-- Copy over non-Java files in source -->
-				<directory>src/main/java</directory>
-				<excludes>
-					<exclude>**/*.java</exclude>
-				</excludes>
 			</resource>
 		</resources>
 		<plugins>
-			<plugin>
+<!-- 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
 				<version>3.0.2</version>
@@ -67,7 +43,7 @@
 						<nonFilteredFileExtension>p12</nonFilteredFileExtension>
 					</nonFilteredFileExtensions>
 				</configuration>
-			</plugin>
+			</plugin> -->
 			<plugin>
 				<groupId>org.eclipse.m2e</groupId>
 				<artifactId>lifecycle-mapping</artifactId>
@@ -113,7 +89,7 @@
 						</goals>
 						<configuration>
 							<sources>
-								<source>src/tools/java</source>
+<!-- 								<source>src/tools/java</source> -->
 								<source>src/main/aspect</source>
 							</sources>
 						</configuration>
@@ -202,9 +178,9 @@
 						<phase>prepare-package</phase>
 						<configuration>
 							<target>
-								<echo>maven.home: ${maven.home}</echo>
+								<!--<echo>maven.home: ${maven.home}</echo>-->
 								<echo>settings.localRepository: ${settings.localRepository}</echo>
-								<echo>ant.version: ${ant.version}</echo>
+								<!--<echo>ant.version: ${ant.version}</echo>-->
 								<echo>user.name: ${user.name}</echo>
 								<echo>user.home: ${user.home}</echo>
 							</target>
